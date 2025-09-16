@@ -1,56 +1,41 @@
-import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export interface Record {
   metka: { text: string }[]
-  pass: string | null
+  type: 'local' | 'ldap'
   login: string
-  type: string
+  pass: string | null
 }
 
 export const useRecordsStore = defineStore(
   'records',
   () => {
     const records = ref<Record[]>([])
-    const metka = ref('')
-    const pass = ref('')
-    const login = ref('')
-    const type = ref('')
-
-    function dumpMetka() {
-      return metka.value
-        .split(';')
-        .map((item) => item.trim())
-        .filter((item) => item.length > 0)
-        .map((item) => ({ text: item }))
-    }
 
     function newRecord() {
-      const record = {
-        metka: dumpMetka(),
-        pass: pass.value,
-        login: login.value,
-        type: type.value,
-      }
-      records.value.push(record)
+      records.value.push({
+        metka: [],
+        type: 'local',
+        login: '',
+        pass: '',
+      })
     }
 
-    function updateRecord(id: number) {
-      const record = {
-        metka: dumpMetka(),
-        pass: pass.value,
-        login: login.value,
-        type: type.value,
-      }
-      records.value.splice(id, 1, record)
+    function updateRecord(index: number, record: Record) {
+      records.value[index] = record
     }
 
-    function deleteRecord(id: number) {
-      records.value.splice(id, 1)
-      console.log('Deleted record with id:', id)
+    function deleteRecord(index: number) {
+      records.value.splice(index, 1)
     }
 
-    return { records, metka, pass, login, type, newRecord, deleteRecord, updateRecord }
+    return {
+      records,
+      newRecord,
+      updateRecord,
+      deleteRecord,
+    }
   },
   {
     persist: true,
